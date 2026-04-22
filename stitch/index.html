@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aurovi | AI Automation That Actually Feels Human</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafaf8; /* Requested warm neutral background */
+            color: #1d1c17;
+            -webkit-font-smoothing: antialiased;
+        }
+        .font-serif {
+            font-family: 'Fraunces', serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        
+        .animate-pulse-soft {
+            animation: pulse-soft 4s ease-in-out infinite;
+        }
+
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(217, 119, 6, 0.3);
+        }
+    
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    
+        .custom-dropdown-menu {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #F5F0E8; /* Match form background */
+        }
+        .custom-dropdown-menu.open {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .dropdown-chevron {
+            transition: transform 0.2s ease;
+        }
+        .dropdown-chevron.rotated {
+            transform: rotate(180deg);
+        }
+        .custom-dropdown-option {
+            border-bottom: 1px solid #E7E5E4;
+            color: #1C1917;
+        }
+        .custom-dropdown-option:last-child {
+            border-bottom: none;
+        }
+        .custom-dropdown-option:hover {
+            background-color: #E7E5E4; /* Subtle background shift */
+            color: #1C1917;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#D97706", // Requested primary CTA color
+              "on-primary": "#ffffff",
+              "secondary": "#9a4614",
+              "background": "#fafaf8",
+              "on-surface": "#1d1c17",
+              "on-surface-variant": "#554336",
+              "surface-container": "#f2ede5",
+              "surface-container-low": "#f8f3eb",
+              "surface-container-high": "#ece8e0",
+              "surface-container-highest": "#e7e2da",
+              "surface-container-lowest": "#ffffff",
+              "outline-variant": "#dbc2b0",
+              "primary-container": "#D97706", // Use same for banner bg or similar warmth
+            },
+            fontFamily: {
+              "headline": ["Fraunces", "serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Top Navigation -->
+<header class="bg-background text-primary full-width top-0 sticky z-50">
+<nav class="flex items-center max-w-7xl mx-auto px-5 md:px-12 py-5 md:py-6 gap-4">
+<!-- Logo (left third on mobile, natural width on desktop) -->
+<div class="flex items-center gap-1 flex-1 md:flex-none">
+  <svg width="36" height="36" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <path d="M 32.1 13 A 14 14 0 1 1 7.9 13" stroke="#1F1A14" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 7.9 13 A 14 14 0 0 1 32.1 13" stroke="#D97706" stroke-width="5" stroke-linecap="round"/>
+  </svg>
+  <span class="text-3xl md:text-4xl font-serif font-bold text-primary">Aurovi</span>
+</div>
+<!-- Desktop nav links (centered) -->
+<div class="hidden md:flex items-center gap-x-10 mx-auto">
+<a class="text-primary font-semibold border-b-2 border-primary pb-1 transition-colors duration-300 font-body" href="#services" style="">Services</a>
+<a class="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-body" href="#how-it-works" style="">How It Works</a>
+<a class="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-body" href="#results" style="">Results</a>
+<a class="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-body" href="#about" style="">About</a>
+</div>
+<!-- Mobile: CTA centered, Hamburger on far right -->
+<div class="flex md:hidden flex-1 justify-center">
+  <button class="bg-primary text-on-primary px-3 py-2 rounded-lg font-medium hover:opacity-90 active:scale-95 font-body text-xs" style="">Claim Your Spot</button>
+</div>
+<!-- Desktop: CTA on right -->
+<div class="hidden md:flex items-center">
+  <button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium hover:opacity-90 active:scale-95 hover-lift font-body" style="">Claim Your Spot</button>
+</div>
+<!-- Hamburger (right third on mobile, hidden on desktop) -->
+<div class="flex md:hidden justify-end flex-shrink-0">
+  <button class="flex flex-col gap-1.5 p-1" id="mobile-menu-btn" aria-label="Open menu">
+    <span class="w-6 h-0.5 bg-on-surface block transition-all duration-300" id="ham-1"></span>
+    <span class="w-6 h-0.5 bg-on-surface block transition-all duration-300" id="ham-2"></span>
+    <span class="w-6 h-0.5 bg-on-surface block transition-all duration-300" id="ham-3"></span>
+  </button>
+</div>
+</nav>
+<!-- Mobile Nav Drawer -->
+<div class="hidden md:hidden bg-background border-t border-surface-container-high px-5 py-6 space-y-4" id="mobile-nav">
+  <a class="block text-primary font-semibold font-body py-2 border-b border-surface-container-high" href="#services">Services</a>
+  <a class="block text-on-surface/70 font-medium font-body py-2 border-b border-surface-container-high hover:text-primary" href="#how-it-works">How It Works</a>
+  <a class="block text-on-surface/70 font-medium font-body py-2 border-b border-surface-container-high hover:text-primary" href="#results">Results</a>
+  <a class="block text-on-surface/70 font-medium font-body py-2 hover:text-primary" href="#about">About</a>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="max-w-7xl mx-auto px-5 md:px-12 py-16 md:py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+<div class="space-y-8 animate-fade-in-up" style="animation-delay: 0.1s;">
+<span class="inline-block py-1 px-3 bg-surface-container-highest text-primary font-label text-sm font-medium rounded-full tracking-wide" style="">THE AI WORKSHOP</span>
+<h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.1] tracking-tight" style="">
+                AI Automation That Actually <span class="italic text-primary" style="">Feels Human</span>.
+            </h1>
+<p class="text-lg md:text-xl text-on-surface/70 leading-relaxed max-w-lg font-body" style="">
+                Your business is losing customers to slow replies, missed follow-ups, and appointments nobody confirmed. We build AI systems that handle all of it - quietly, in your voice, while you focus on growth.
+            </p>
+<div class="flex flex-wrap items-center gap-6 pt-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-lg font-medium text-lg hover:opacity-90 active:scale-95 hover-lift font-body" style="">Claim Your Spot</button>
+<a class="text-primary font-medium text-lg hover:underline underline-offset-8 transition-all font-body" href="#services" style="">View our services →</a>
+</div>
+</div>
+<div class="relative animate-fade-in-up" style="animation-delay: 0.3s;">
+<div class="aspect-square rounded-[3rem] overflow-hidden bg-surface-container-high flex items-center justify-center">
+<img alt="Modern workspace" class="w-full h-full object-cover opacity-95 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJyTFnBqtEcxPJ7LBt9nKHVGYeW1iaY5GPEcu3nDCd4myWgKmrcvDeLXr-MgyhdrGHn73t5uiKG7EirUQ85vlb4zAj-M80fJx2Lue6DIQOSGCdZQC9b5xcYFJ10llv6gHvBDsZQzyhuV4sCu7VZfAhZ67kYI65lMfL0fzbU_7u9R3FPNLzA-A-gTD027x2O6quQspEFg8t5ktsI93t6whj2LEonVVANWYpsOjLQRUnQfpCgB-_ZDDwtQ1dmGR-Lli8tuZ4Fmk26rWf" style=""/>
+</div>
+<!-- Automation Pulse Card -->
+<div class="absolute bottom-4 left-3 md:bottom-8 md:-left-12 bg-white/95 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-2xl max-w-[200px] md:max-w-[240px] border border-surface-container animate-pulse-soft">
+<div class="flex items-center gap-3 mb-3">
+<span class="flex h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
+<span class="text-[10px] font-label font-bold tracking-widest text-on-surface/50 uppercase" style="">Automation Pulse</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="text-[11px] text-on-surface/60 font-body" style="">Active Agents</div>
+<div class="text-[11px] font-bold text-primary font-body" style="">12 Running</div>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4 rounded-full"></div>
+</div>
+<p class="text-[13px] font-serif italic text-on-surface/80 leading-snug" style="">"Optimizing client onboarding workflow... 98% efficiency target reached."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="bg-surface-container-low py-16 md:py-24 lg:py-32" id="services">
+<div class="max-w-7xl mx-auto px-5 md:px-12">
+<div class="mb-20 text-center max-w-2xl mx-auto">
+<h2 class="text-4xl md:text-5xl font-serif font-bold mb-6" style="">Expertise Redefined</h2>
+<p class="text-on-surface/60 text-lg font-body" style="">Every day, good businesses lose good customers because nobody followed up fast enough. We build the systems that make sure that never happens to yours.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Service 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="">bolt</span>
+</div>
+<h3 class="font-serif text-xl font-bold mb-4" style="">Speed-to-Lead Automation</h3>
+<p class="text-on-surface/70 text-sm leading-relaxed font-body" style="">Most businesses take hours to reply to new enquiries. By then, the lead has moved on. We get you responding in under 60 seconds - automatically, in your voice, day or night.</p>
+</div>
+<!-- Service 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="">calendar_today</span>
+</div>
+<h3 class="font-serif text-xl font-bold mb-4" style="">Appointment Systems</h3>
+<p class="text-on-surface/70 text-sm leading-relaxed font-body" style="">Stop losing appointments to back-and-forth emails and no-shows. We build booking systems that qualify leads, confirm appointments, and keep your calendar full - without your team making a single call.</p>
+</div>
+<!-- Service 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="">account_tree</span>
+</div>
+<h3 class="font-serif text-xl font-bold mb-4" style="">Workflow Automation</h3>
+<p class="text-on-surface/70 text-sm leading-relaxed font-body" style="">Stop doing manually what a system could handle for you. We connect your CRM, inbox, calendar, and tools into one quiet operation that runs itself - giving you back hours every week.</p>
+</div>
+<!-- Service 4 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="">terminal</span>
+</div>
+<h3 class="font-serif text-xl font-bold mb-4" style="">Custom AI Builds</h3>
+<p class="text-on-surface/70 text-sm leading-relaxed font-body" style="">When off-the-shelf tools aren't enough, we build custom AI that understands your business, speaks in your voice, and solves problems nothing else on the market can.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-16 md:py-24 lg:py-32" id="how-it-works">
+<div class="max-w-7xl mx-auto px-5 md:px-12">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between mb-20 gap-8">
+<div class="max-w-xl">
+<h2 class="text-4xl md:text-5xl font-serif font-bold mb-6" style="">The Process</h2>
+<p class="text-on-surface/60 text-lg font-body" style="">A clear three-step path from first call to fully running - usually in under 30 days.</p>
+</div>
+<div class="text-sm font-label font-bold tracking-widest text-primary/40 uppercase" style="">STRATEGY → EXECUTION</div>
+</div>
+<div class="relative grid grid-cols-1 md:grid-cols-3 gap-16">
+<div class="hidden md:block absolute top-12 left-0 w-full h-[1px] bg-outline-variant/30 -z-10"></div>
+<!-- Step 1 -->
+<div class="space-y-6">
+<div class="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center text-primary border-4 border-background">
+<span class="material-symbols-outlined text-4xl" style="">search</span>
+</div>
+<div class="space-y-3">
+<span class="text-xs font-label font-bold text-secondary tracking-widest" style="">01. DISCOVER</span>
+<h3 class="font-serif text-2xl font-bold" style="">We Find What's Leaking</h3>
+<p class="text-on-surface/70 leading-relaxed font-body" style="">In week one, we audit how leads move through your business - where they go cold, where follow-ups drop, and where your team is spending hours on work a system should handle. You'll end this phase with a clear map of exactly what to fix and what it's costing you.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="space-y-6">
+<div class="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center text-primary border-4 border-background">
+<span class="material-symbols-outlined text-4xl" style="">architecture</span>
+</div>
+<div class="space-y-3">
+<span class="text-xs font-label font-bold text-secondary tracking-widest" style="">02. BUILD</span>
+<h3 class="font-serif text-2xl font-bold" style="">We Design It In Your Voice</h3>
+<p class="text-on-surface/70 leading-relaxed font-body" style="">Over the next two weeks, we design and build your custom AI systems - every message, every touchpoint, every automated reply written in your brand's voice. You review and approve everything before a single customer ever sees it. Nothing goes live until it feels like you.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="space-y-6">
+<div class="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center text-primary border-4 border-background">
+<span class="material-symbols-outlined text-4xl" style="">rocket_launch</span>
+</div>
+<div class="space-y-3">
+<span class="text-xs font-label font-bold text-secondary tracking-widest" style="">03. LAUNCH</span>
+<h3 class="font-serif text-2xl font-bold" style="">We Go Live And Stay With You</h3>
+<p class="text-on-surface/70 leading-relaxed font-body" style="">In week four, your system goes live. We monitor it, optimise it, and report on exactly what it's doing for your business every month. You never worry about it breaking, drifting, or falling out of date - because we're the ones watching it.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Industry Stats Section -->
+<section class="bg-surface-container-high py-16 md:py-24 lg:py-32" id="results">
+<div class="max-w-7xl mx-auto px-5 md:px-12">
+<div class="mb-16 max-w-2xl">
+<span class="text-xs font-label font-bold tracking-widest text-primary/60 uppercase">The Case for Automation</span>
+<h2 class="text-4xl font-serif font-bold mt-4 mb-4">The numbers don't lie.</h2>
+<p class="text-on-surface/60 font-body text-lg">The gap between businesses that automate and those that don't is widening fast. Here's what the research shows.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="text-5xl font-serif font-bold text-primary mb-2">391%</div>
+<div class="text-xs font-label font-bold tracking-widest text-on-surface/50 uppercase mb-4">Higher Conversion</div>
+<p class="text-on-surface/70 font-body text-sm leading-relaxed">Responding to a lead within 5 minutes increases conversion rates by up to 391% compared to waiting 30 minutes.</p>
+</div>
+<a href="https://greetnow.com/blog/speed-to-lead-statistics-2024" target="_blank" rel="noopener noreferrer" class="text-[10px] text-on-surface/35 font-body mt-6 hover:text-primary transition-colors">Source: GreetNow, 2024 ↗</a>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="text-5xl font-serif font-bold text-primary mb-2">50%</div>
+<div class="text-xs font-label font-bold tracking-widest text-on-surface/50 uppercase mb-4">First Mover Wins</div>
+<p class="text-on-surface/70 font-body text-sm leading-relaxed">35–50% of sales go to the vendor that responds first. Speed isn't a nice-to-have - it's the deciding factor.</p>
+</div>
+<a href="https://verse.ai/blog/speed-to-lead-statistics" target="_blank" rel="noopener noreferrer" class="text-[10px] text-on-surface/35 font-body mt-6 hover:text-primary transition-colors">Source: Verse.ai ↗</a>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="text-5xl font-serif font-bold text-primary mb-2">5.6h</div>
+<div class="text-xs font-label font-bold tracking-widest text-on-surface/50 uppercase mb-4">Saved Per Week</div>
+<p class="text-on-surface/70 font-body text-sm leading-relaxed">SMB employees save an average of 5.6 hours per week once AI automation tools are integrated into daily workflows.</p>
+</div>
+<a href="https://www.business.com/articles/ai-usage-smb-workplace-study/" target="_blank" rel="noopener noreferrer" class="text-[10px] text-on-surface/35 font-body mt-6 hover:text-primary transition-colors">Source: Business.com SMB AI Report, 2026 ↗</a>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="text-5xl font-serif font-bold text-primary mb-2">91%</div>
+<div class="text-xs font-label font-bold tracking-widest text-on-surface/50 uppercase mb-4">Report More Revenue</div>
+<p class="text-on-surface/70 font-body text-sm leading-relaxed">91% of SMBs using AI say it directly boosts their revenue - with 86% also reporting improved profit margins.</p>
+</div>
+<a href="https://www.salesforce.com/news/stories/smbs-ai-trends-2025/" target="_blank" rel="noopener noreferrer" class="text-[10px] text-on-surface/35 font-body mt-6 hover:text-primary transition-colors">Source: Salesforce SMB Trends, 2025 ↗</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Integrations Section -->
+<section class="py-16 md:py-24 lg:py-32 bg-background">
+<div class="max-w-7xl mx-auto px-5 md:px-12">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<span class="text-xs font-label font-bold tracking-widest text-primary/60 uppercase">Works With Your Stack</span>
+<h2 class="text-4xl font-serif font-bold mt-4 mb-4">Built on tools you already use.</h2>
+<p class="text-on-surface/60 font-body text-lg">We build on top of best-in-class platforms - no proprietary lock-in, no black boxes. Just reliable automation that plays nicely with what you've already got.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-3">
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">n8n</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">OpenAI</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">HubSpot</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Calendly</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Slack</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Google Workspace</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Airtable</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Stripe</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Twilio</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Notion</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Make</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Zapier</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">GoHighLevel</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low border border-surface-container-high px-5 py-3 rounded-full hover:border-primary/30 hover:bg-surface-container transition-colors">
+<span class="text-sm font-body font-medium text-on-surface/80">Typeform</span>
+</div>
+<div class="flex items-center gap-2 bg-primary/10 border border-primary/20 px-5 py-3 rounded-full">
+<span class="text-sm font-body font-medium text-primary">+ custom integrations</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 md:py-24 lg:py-32 bg-surface-container-low" id="faq">
+<div class="max-w-7xl mx-auto px-5 md:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+<div class="lg:col-span-1">
+<span class="text-xs font-label font-bold tracking-widest text-primary/60 uppercase">Got Questions?</span>
+<h2 class="text-4xl font-serif font-bold mt-4 mb-4">The stuff people actually want to know.</h2>
+<p class="text-on-surface/60 font-body">No fluff. Just honest answers to the questions we'd ask if we were in your shoes.</p>
+</div>
+<div class="lg:col-span-2 space-y-4" id="faq-list">
+
+<!-- FAQ Item 1 -->
+<div class="faq-item bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-container-high">
+<button class="faq-trigger w-full flex items-center justify-between p-5 md:p-7 text-left gap-4">
+<span class="font-serif text-lg font-bold">What's the difference between hiring Aurovi vs. just doing it myself with Zapier or Make?</span>
+<span class="material-symbols-outlined text-primary flex-shrink-0 faq-icon transition-transform duration-300">add</span>
+</button>
+<div class="faq-answer hidden px-5 pb-5 md:px-7 md:pb-7">
+<p class="font-body text-on-surface/70 leading-relaxed">Honestly? Zapier and Make are great tools - we use them ourselves. And if you've got a few hours to spend on tutorials, simple automations are totally doable on your own. The difference comes when you need something that works across five different platforms and doesn't quietly break at 2am when an API changes. We've already made all those mistakes, so you don't have to. You get the result without the learning curve.</p>
+</div>
+</div>
+
+<!-- FAQ Item 2 -->
+<div class="faq-item bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-container-high">
+<button class="faq-trigger w-full flex items-center justify-between p-5 md:p-7 text-left gap-4">
+<span class="font-serif text-lg font-bold">Do I need to be technical to work with you?</span>
+<span class="material-symbols-outlined text-primary flex-shrink-0 faq-icon transition-transform duration-300">add</span>
+</button>
+<div class="faq-answer hidden px-5 pb-5 md:px-7 md:pb-7">
+<p class="font-body text-on-surface/70 leading-relaxed">Not at all. You just need to know your business - the bottlenecks, the repetitive tasks, the "ugh, I have to do this manually again" moments. We take it from there. Most clients never see a single line of code, and that's exactly how it should be. You tell us what's slowing you down, we figure out how to fix it.</p>
+</div>
+</div>
+
+<!-- FAQ Item 3 -->
+<div class="faq-item bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-container-high">
+<button class="faq-trigger w-full flex items-center justify-between p-5 md:p-7 text-left gap-4">
+<span class="font-serif text-lg font-bold">How long does a typical automation build take?</span>
+<span class="material-symbols-outlined text-primary flex-shrink-0 faq-icon transition-transform duration-300">add</span>
+</button>
+<div class="faq-answer hidden px-5 pb-5 md:px-7 md:pb-7">
+<p class="font-body text-on-surface/70 leading-relaxed">A speed-to-lead system or appointment booking flow usually comes together in about a week. A more complex multi-step workflow with CRM integrations and custom logic? Closer to 2-3 weeks. Either way, we'll give you a clear timeline before anything starts - no vague "it depends" answers when money's involved.</p>
+</div>
+</div>
+
+<!-- FAQ Item 4 -->
+<div class="faq-item bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-container-high">
+<button class="faq-trigger w-full flex items-center justify-between p-5 md:p-7 text-left gap-4">
+<span class="font-serif text-lg font-bold">How does pricing work?</span>
+<span class="material-symbols-outlined text-primary flex-shrink-0 faq-icon transition-transform duration-300">add</span>
+</button>
+<div class="faq-answer hidden px-5 pb-5 md:px-7 md:pb-7">
+<p class="font-body text-on-surface/70 leading-relaxed">Project-based, fixed quotes - no surprise invoices. After a short discovery call where we understand exactly what you need, we'll scope the work and give you a clear number upfront. Every project is priced against the value it creates for your business, not the hours it takes us to build it.</p>
+</div>
+</div>
+
+<!-- FAQ Item 5 -->
+<div class="faq-item bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-container-high">
+<button class="faq-trigger w-full flex items-center justify-between p-5 md:p-7 text-left gap-4">
+<span class="font-serif text-lg font-bold">What happens after I join the waitlist?</span>
+<span class="material-symbols-outlined text-primary flex-shrink-0 faq-icon transition-transform duration-300">add</span>
+</button>
+<div class="faq-answer hidden px-5 pb-5 md:px-7 md:pb-7">
+<p class="font-body text-on-surface/70 leading-relaxed">You'll hear from us personally - not an automated email sequence (ironic, we know). We'll reach out to schedule a short discovery call, learn about what's slowing your business down, and figure out together if we're a good fit. We're being intentional about who we take on first so we can actually do our best work. If it's a fit, you'll know. If it's not, we'll tell you.</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-16 md:py-24 lg:py-32 border-t border-outline-variant/10" id="about">
+<div class="max-w-7xl mx-auto px-5 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
+<div class="relative">
+<div class="aspect-[4/5] bg-surface-container overflow-hidden rounded-[2.5rem]">
+<img alt="Arbaz Surti - Founder, Aurovi" class="w-full h-full object-cover object-top" src="1776469848930-5u8suju15bv.jpg" style=""/>
+</div>
+<div class="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-surface-container-lowest p-4 md:p-6 shadow-lg border border-surface-container max-w-[180px] md:max-w-[200px]">
+<p class="font-serif text-sm italic" style="">"Built so you can grow."</p>
+</div>
+</div>
+<div class="space-y-8">
+<span class="text-xs font-label font-bold tracking-widest text-primary/60 uppercase">Why I Started Aurovi</span>
+<h2 class="text-4xl font-serif font-bold mt-4">It started in my dad's factory.</h2>
+<div class="space-y-5 text-on-surface/70 text-base md:text-lg leading-relaxed font-body">
+<p>I grew up watching huge machines turn out tin cans at lightning speed. But my dad never let me get caught up in the volume. He'd point at the rejects and say, "It's not about how much you make. It's about how well you make it." That stuck.</p>
+<p>He worked eleven hours a day, six days a week. I'd wait up most nights because he'd always come home with a candy bar for me. We'd eat dinner late, together, then he'd be gone again before I woke up.</p>
+<p>His business never grew the way it could have. Not because he wasn't great at what he did, but because he never had the time. Every hour got eaten by paperwork, managing workers, legal stuff, the daily grind of keeping things running. He had one client he served beautifully for years. He always wished he could've served more.</p>
+<p>I spent the next decade in tech, across QA, business analysis, and product management. Different roles, same pattern: brilliant people drowning in work that didn't actually need a human touch. I became obsessed with customer empathy, with understanding exactly what made people's days harder so I could build them out of the trap.</p>
+<p>Then I started learning about AI automation. I remember watching a workflow that took an incoming lead, dropped it into a CRM, and triggered an entire email sequence with zero human intervention. My jaw dropped. The kind of work that ate my dad's evenings? AI can handle most of it now.</p>
+<p>That's why Aurovi exists. To give small business owners back the hours they've been trading away just to keep the lights on, so they can finally do what my dad always wanted to do: grow.</p>
+</div>
+<div class="pt-4">
+<div class="font-serif text-xl font-bold">Arbaz Surti</div>
+<div class="text-sm font-label text-primary/60 tracking-widest uppercase">Founder, Aurovi</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Banner -->
+<section class="max-w-7xl mx-auto px-5 md:px-12 mb-16 md:mb-24">
+<div class="bg-primary p-8 md:p-12 lg:p-20 rounded-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12">
+<div class="relative z-10 max-w-xl text-center md:text-left">
+<h2 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-6" style="">Let's build your next chapter.</h2>
+<p class="text-white/80 text-lg font-body" style="">Schedule a strategy call to explore how bespoke automation can transform your operations.</p>
+</div>
+<div class="relative z-10">
+<button class="bg-surface-container-lowest text-primary px-10 py-5 rounded-lg font-bold text-xl hover-lift active:scale-95 font-body" style="">Claim Your Spot</button>
+</div>
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20"></div>
+<div class="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-10 -mb-10"></div>
+</div>
+</section>
+</main>
+<footer class="bg-[#f8f3eb] text-primary full-width py-14 md:py-20">
+<div class="max-w-7xl mx-auto px-5 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+<div class="space-y-6">
+<div class="flex items-center gap-1">
+  <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <path d="M 32.1 13 A 14 14 0 1 1 7.9 13" stroke="#1F1A14" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 7.9 13 A 14 14 0 0 1 32.1 13" stroke="#D97706" stroke-width="5" stroke-linecap="round"/>
+  </svg>
+  <span class="text-2xl font-serif font-bold text-primary">Aurovi</span>
+</div>
+<p class="font-serif font-light text-on-surface/60 leading-relaxed" style="">Human-centered automation for the modern atelier. Building the future of work with grace and precision.</p>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div class="space-y-4">
+<h4 class="font-bold text-sm tracking-widest uppercase text-on-surface/40 font-body" style="">Inquiries</h4>
+<ul class="space-y-2 text-sm font-body">
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">Services</a></li>
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">How It Works</a></li>
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">Results</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-sm tracking-widest uppercase text-on-surface/40 font-body" style="">Agency</h4>
+<ul class="space-y-2 text-sm font-body">
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">About</a></li>
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">Privacy Policy</a></li>
+<li class="" style=""><a class="text-on-surface/60 hover:text-primary underline decoration-amber-200 underline-offset-4 hover:translate-x-1 transition-all inline-block" href="#" style="">Terms</a></li>
+</ul>
+</div>
+</div>
+<div class="space-y-6 text-right md:text-left">
+<h4 class="font-bold text-sm tracking-widest uppercase text-on-surface/40 font-body" style="">Newsletter</h4>
+<div class="flex border-b border-outline-variant pb-2">
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-light font-body" placeholder="Your email address" type="email"/>
+<button class="text-primary hover:translate-x-1 transition-transform" style="">
+<span class="material-symbols-outlined" style="">arrow_forward</span>
+</button>
+</div>
+<p class="text-[10px] uppercase tracking-widest text-on-surface/60 font-body" style="">© 2026 Aurovi. All Rights Reserved.</p>
+</div>
+</div>
+</footer>
+<!-- Start Your Journey Modal -->
+<div class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 ease-out" id="journey-modal">
+<div class="bg-[#F5F0E8] text-[#1C1917] w-full max-w-lg rounded-t-2xl sm:rounded-xl shadow-2xl relative transform scale-95 transition-transform duration-300 ease-out overflow-hidden max-h-[92vh] flex flex-col">
+<!-- Close Button -->
+<button class="absolute top-4 right-4 text-[#1C1917]/50 hover:text-[#1C1917] transition-colors z-10" id="close-journey-modal" style="">
+<span class="material-symbols-outlined" style="">close</span>
+</button>
+<div class="p-5 md:p-10 overflow-y-auto">
+<h2 class="font-serif text-2xl md:text-3xl font-bold mb-1 text-center" style="">Claim Your Spot</h2>
+<p class="font-body text-sm text-[#1C1917]/70 mb-5 md:mb-8 text-center" style="">Tell us about your firm and how we can help you scale.</p>
+<form class="space-y-3 md:space-y-4" id="journey-form">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">First Name<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
+<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Last Name<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
+<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Email Address<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
+<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="email"/>
+</div>
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Company<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
+<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Project Budget<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
+<div class="relative custom-dropdown" id="budget-dropdown">
+<button class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-3 text-sm flex items-center justify-between transition-all dropdown-trigger" style="" type="button">
+<span class="selected-text" style="">Select budget</span>
+<span class="material-symbols-outlined text-lg dropdown-chevron" style="">expand_more</span>
+</button>
+<div class="absolute z-[110] left-0 right-0 mt-2 rounded-lg shadow-xl border border-surface-container-high overflow-hidden custom-dropdown-menu">
+<div class="py-1">
+<div class="custom-dropdown-option px-4 py-3 text-sm cursor-pointer transition-colors font-body" data-value="&lt;1000" style=""> &lt; $1,000 </div>
+<div class="custom-dropdown-option px-4 py-3 text-sm cursor-pointer transition-colors font-body" data-value="2000-3000" style="">$2,000 - $3,000</div>
+<div class="custom-dropdown-option px-4 py-3 text-sm cursor-pointer transition-colors font-body" data-value="&gt;3000" style=""> &gt; $3,000 </div>
+</div>
+</div>
+<input name="budget" required="" type="hidden"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Interested In</label>
+<div class="relative custom-dropdown" id="service-dropdown">
+<button class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-3 text-sm flex items-center justify-between transition-all dropdown-trigger" style="" type="button">
+<span class="selected-text" style="">Select service</span>
+<span class="material-symbols-outlined text-lg dropdown-chevron" style="">expand_more</span>
+</button>
+<div class="absolute z-[110] left-0 right-0 mt-2 rounded-lg shadow-xl border border-surface-container-high overflow-hidden custom-dropdown-menu">
+<div class="py-1">
+<div class="custom-dropdown-option px-4 py-3 text-sm cursor-pointer transition-colors font-body" data-value="opps" style="">Identifying AI opportunities</div>
+<div class="custom-dropdown-option px-4 py-3 text-sm cursor-pointer transition-colors font-body" data-value="builds" style="">Building custom AI solutions</div>
+</div>
+</div>
+<input name="service" required="" type="hidden"/>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Additional info</label>
+<textarea class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-3 text-sm resize-none" required="" rows="3"></textarea>
+</div>
+<button class="bg-[#D97706] text-white font-bold py-3 md:py-4 rounded-lg mt-2 md:mt-4 hover:opacity-90 transition-all active:scale-[0.98] font-body mx-auto block px-12 w-full" style="" type="submit">Submit Request</button>
+</form>
+</div>
+</div>
+</div><script>
+    // Mobile hamburger menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const ham1 = document.getElementById('ham-1');
+    const ham2 = document.getElementById('ham-2');
+    const ham3 = document.getElementById('ham-3');
+    let menuOpen = false;
+    mobileMenuBtn.addEventListener('click', () => {
+        menuOpen = !menuOpen;
+        mobileNav.classList.toggle('hidden', !menuOpen);
+        ham1.style.transform = menuOpen ? 'translateY(8px) rotate(45deg)' : '';
+        ham2.style.opacity = menuOpen ? '0' : '1';
+        ham3.style.transform = menuOpen ? 'translateY(-8px) rotate(-45deg)' : '';
+    });
+    // Close mobile nav when a link is clicked
+    mobileNav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+            menuOpen = false;
+            mobileNav.classList.add('hidden');
+            ham1.style.transform = '';
+            ham2.style.opacity = '1';
+            ham3.style.transform = '';
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('journey-modal');
+        const modalContent = modal.querySelector('div');
+        const closeBtn = document.getElementById('close-journey-modal');
+        const allButtons = document.querySelectorAll('button');
+
+        const openModal = () => {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeModal = () => {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95');
+            modalContent.classList.remove('scale-100');
+            document.body.style.overflow = '';
+        };
+
+        // Attach click listener to all buttons with 'Claim Your Spot' text
+        allButtons.forEach(btn => {
+            if (btn.innerText.trim() === 'Claim Your Spot') {
+                btn.addEventListener('click', openModal);
+            }
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+        
+        // Close on clicking the backdrop
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Handle form submission
+        document.getElementById('journey-form').onsubmit = (e) => {
+            e.preventDefault();
+            const formEl = document.getElementById('journey-form');
+            formEl.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 space-y-4 text-center">
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-primary">check_circle</span>
+                    </div>
+                    <h3 class="font-serif text-2xl font-bold">You're on the list.</h3>
+                    <p class="font-body text-sm text-[#1C1917]/70 max-w-xs">We'll be in touch soon. Keep an eye on your inbox.</p>
+                    <button type="button" onclick="document.getElementById('close-journey-modal').click()" class="mt-4 font-body text-sm font-medium text-primary hover:underline underline-offset-4">Close</button>
+                </div>
+            `;
+        };
+    });
+
+    // FAQ Accordion Logic
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const item = trigger.closest('.faq-item');
+            const answer = item.querySelector('.faq-answer');
+            const icon = trigger.querySelector('.faq-icon');
+            const isOpen = !answer.classList.contains('hidden');
+
+            // Close all others
+            document.querySelectorAll('.faq-item').forEach(other => {
+                other.querySelector('.faq-answer').classList.add('hidden');
+                other.querySelector('.faq-icon').textContent = 'add';
+                other.querySelector('.faq-icon').classList.remove('rotate-45');
+            });
+
+            // Toggle current
+            if (!isOpen) {
+                answer.classList.remove('hidden');
+                icon.textContent = 'remove';
+            }
+        });
+    });
+
+    // Custom Dropdown Logic
+    const setupDropdown = (id) => {
+        const container = document.getElementById(id);
+        const trigger = container.querySelector('.dropdown-trigger');
+        const menu = container.querySelector('.custom-dropdown-menu');
+        const chevron = container.querySelector('.dropdown-chevron');
+        const hiddenInput = container.querySelector('input[type="hidden"]');
+        const selectedText = container.querySelector('.selected-text');
+        const options = container.querySelectorAll('.custom-dropdown-option');
+
+        const toggleMenu = (e) => {
+            e.stopPropagation();
+            const isOpen = menu.classList.contains('open');
+            
+            // Close others
+            document.querySelectorAll('.custom-dropdown-menu').forEach(m => m.classList.remove('open'));
+            document.querySelectorAll('.dropdown-chevron').forEach(c => c.classList.remove('rotated'));
+
+            if (!isOpen) {
+                menu.classList.add('open');
+                chevron.classList.add('rotated');
+            }
+        };
+
+        trigger.addEventListener('click', toggleMenu);
+
+        options.forEach(option => {
+            option.addEventListener('click', () => {
+                const val = option.getAttribute('data-value');
+                const text = option.innerText;
+                hiddenInput.value = val;
+                selectedText.innerText = text;
+                menu.classList.remove('open');
+                chevron.classList.remove('rotated');
+            });
+        });
+    };
+
+    setupDropdown('budget-dropdown');
+    setupDropdown('service-dropdown');
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-dropdown-menu').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.dropdown-chevron').forEach(c => c.classList.remove('rotated'));
+    });
+    </script></body></html>
