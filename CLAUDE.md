@@ -68,12 +68,17 @@ Filter by `source` / `source_name` in the Table Editor to slice leads by channel
 
 ## Deploy
 
-- GitHub: `github.com/arbaz-surti/aurovi-website`, branch `main`.
-- Host: **Vercel**, live at **https://aurovi.ai/**, serving the **`stitch/`** directory.
-- ⚠️ **Verify Vercel's Git integration is connected** (Settings → Git, production branch
-  `main`, Root Directory `stitch`). If the site was deployed manually via `vercel --prod`,
-  a `git push` will NOT auto-deploy — connect the integration or re-run `vercel --prod`.
-- The site has no favicon (a harmless `/favicon.ico` 404 in the console).
+- GitHub: `github.com/arbaz-surti/aurovi-website`, branch `main`. **Pushes to `main`
+  auto-deploy** via Vercel's Git integration (connected 2026-06-10).
+- Host: **Vercel** (project `aurovi`, team `arbaz-surtis-projects`), live at
+  **https://aurovi.ai/**.
+- ⚠️ Project **Root Directory MUST = `stitch`** (set in project settings). The site lives
+  in that subfolder; with root unset, Git builds serve the repo root and the homepage 404s.
+- `stitch/vercel.json` sets static security headers (nosniff, SAMEORIGIN, referrer/
+  permissions policy).
+- Deployment Protection is ON → `*.vercel.app` deployment URLs require login; the public
+  `aurovi.ai` domain is unaffected.
+- No favicon (harmless `/favicon.ico` 404 in the console).
 
 ## Status / roadmap
 
