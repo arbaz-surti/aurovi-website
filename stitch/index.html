@@ -559,23 +559,26 @@
 <h2 class="font-serif text-2xl md:text-3xl font-bold mb-1 text-center" style="">Claim Your Spot</h2>
 <p class="font-body text-sm text-[#1C1917]/70 mb-5 md:mb-8 text-center" style="">Tell us about your firm and how we can help you scale.</p>
 <form class="space-y-3 md:space-y-4" id="journey-form">
+<input type="hidden" name="source" value="website-contact"/>
+<input type="hidden" name="source_name" value="Website Contact Form"/>
+<input type="text" name="hp_check" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"/>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div class="space-y-1">
 <label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">First Name<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
-<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+<input name="first_name" class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
 </div>
 <div class="space-y-1">
 <label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Last Name<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
-<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+<input name="last_name" class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
 </div>
 </div>
 <div class="space-y-1">
 <label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Email Address<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
-<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="email"/>
+<input name="email" class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="email"/>
 </div>
 <div class="space-y-1">
 <label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Company<span class="text-red-500 ml-0.5 font-bold italic" style="">*</span></label>
-<input class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
+<input name="company" class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-2.5 md:py-3 text-sm" required="" type="text"/>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="space-y-1">
@@ -614,7 +617,7 @@
 </div>
 <div class="space-y-1">
 <label class="block font-body text-[10px] font-bold tracking-widest uppercase opacity-60" style="">Additional info</label>
-<textarea class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-3 text-sm resize-none" required="" rows="3"></textarea>
+<textarea name="message" class="w-full bg-white/50 border-none rounded-lg focus:ring-2 focus:ring-primary font-body px-4 py-3 text-sm resize-none" required="" rows="3"></textarea>
 </div>
 <button class="bg-[#D97706] text-white font-bold py-3 md:py-4 rounded-lg mt-2 md:mt-4 hover:opacity-90 transition-all active:scale-[0.98] font-body mx-auto block px-12 w-full" style="" type="submit">Submit Request</button>
 </form>
@@ -681,9 +684,14 @@
         });
 
         // Handle form submission
-        document.getElementById('journey-form').onsubmit = (e) => {
-            e.preventDefault();
-            const formEl = document.getElementById('journey-form');
+        // --- Lead capture config ---
+        const SUPABASE_URL = 'https://yzzftkgfxjbipylckxbj.supabase.co';
+        // anon key: public by design — safe in client code because of the INSERT-only RLS policy on `leads`.
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6emZ0a2dmeGpiaXB5bGNreGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzAwMjUsImV4cCI6MjA5NjY0NjAyNX0.mQVO5YZUnTTr6wImCtRmcta8JfrDbe681RKRa1ayz2w';
+        // Set once the n8n "contact thank-you" (W2) webhook exists. Leave '' to skip the email.
+        const N8N_THANKYOU_WEBHOOK_URL = '';
+
+        const showJourneySuccess = (formEl) => {
             formEl.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-10 space-y-4 text-center">
                     <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -694,6 +702,80 @@
                     <button type="button" onclick="document.getElementById('close-journey-modal').click()" class="mt-4 font-body text-sm font-medium text-primary hover:underline underline-offset-4">Close</button>
                 </div>
             `;
+        };
+
+        const showJourneyError = (formEl) => {
+            let el = formEl.querySelector('#journey-error');
+            if (!el) {
+                el = document.createElement('p');
+                el.id = 'journey-error';
+                el.className = 'font-body text-sm text-red-600 text-center mt-2';
+                formEl.appendChild(el);
+            }
+            el.textContent = "Sorry — something went wrong saving your request. Please try again.";
+        };
+
+        document.getElementById('journey-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formEl = e.currentTarget;
+
+            // Honeypot: bots fill hidden fields, humans don't. Pretend success, save nothing.
+            if (formEl.querySelector('input[name="hp_check"]')?.value) {
+                showJourneySuccess(formEl);
+                return;
+            }
+
+            const fd = new FormData(formEl);
+            const first_name = fd.get('first_name') || '';
+            const last_name  = fd.get('last_name')  || '';
+            const lead = {
+                full_name:   `${first_name} ${last_name}`.trim() || null,
+                email:       fd.get('email') || null,
+                source:      fd.get('source') || 'website-contact',
+                source_name: fd.get('source_name') || 'Website Contact Form',
+                budget:      fd.get('budget') || null,   // promoted column: key sales filter
+                service:     fd.get('service') || null,  // promoted column
+                responses: {                              // form-specific fields live here
+                    first_name: first_name || null,
+                    last_name:  last_name || null,
+                    company:    fd.get('company') || null,
+                    message:    fd.get('message') || null,
+                },
+            };
+
+            const submitBtn = formEl.querySelector('button[type="submit"]');
+            const originalLabel = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+            try {
+                // 1) Save the lead directly to Supabase first (survives n8n downtime).
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal',
+                    },
+                    body: JSON.stringify(lead),
+                });
+                if (!res.ok) throw new Error('Supabase insert failed: ' + res.status);
+
+                // Lead is captured — confirm to the visitor.
+                showJourneySuccess(formEl);
+
+                // 2) Best-effort: trigger the thank-you email via n8n. Never blocks/breaks the UX.
+                if (N8N_THANKYOU_WEBHOOK_URL) {
+                    fetch(N8N_THANKYOU_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: lead.email, first_name, source: lead.source }),
+                    }).catch(() => {});
+                }
+            } catch (err) {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel || 'Submit Request'; }
+                showJourneyError(formEl);
+            }
         };
     });
 
