@@ -688,8 +688,8 @@
         const SUPABASE_URL = 'https://yzzftkgfxjbipylckxbj.supabase.co';
         // anon key: public by design — safe in client code because of the INSERT-only RLS policy on `leads`.
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6emZ0a2dmeGpiaXB5bGNreGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzAwMjUsImV4cCI6MjA5NjY0NjAyNX0.mQVO5YZUnTTr6wImCtRmcta8JfrDbe681RKRa1ayz2w';
-        // Set once the n8n "contact thank-you" (W2) webhook exists. Leave '' to skip the email.
-        const N8N_THANKYOU_WEBHOOK_URL = '';
+        // n8n "contact thank-you" (W2) webhook. Leave '' to skip the email. CORS is locked to https://aurovi.ai.
+        const N8N_THANKYOU_WEBHOOK_URL = 'https://n8n.arbazsurti.com/webhook/aurovi-contact-thankyou';
 
         const showJourneySuccess = (formEl) => {
             formEl.innerHTML = `
@@ -765,11 +765,23 @@
                 showJourneySuccess(formEl);
 
                 // 2) Best-effort: trigger the thank-you email via n8n. Never blocks/breaks the UX.
+                //    Flattened payload so the email template's {{first_name}}, {{company}}, {{message}}, etc. resolve directly.
                 if (N8N_THANKYOU_WEBHOOK_URL) {
                     fetch(N8N_THANKYOU_WEBHOOK_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: lead.email, first_name, source: lead.source }),
+                        body: JSON.stringify({
+                            email:       lead.email,
+                            full_name:   lead.full_name,
+                            first_name,
+                            last_name,
+                            company:     lead.responses.company,
+                            message:     lead.responses.message,
+                            budget:      lead.budget,
+                            service:     lead.service,
+                            source:      lead.source,
+                            source_name: lead.source_name,
+                        }),
                     }).catch(() => {});
                 }
             } catch (err) {
